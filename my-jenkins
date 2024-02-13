@@ -1,0 +1,192 @@
+pipeline {
+    agent any
+    
+    environment {
+        
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'latest', url: 'https://github.com/agsgd/10-MicroService-Appliction.git'
+            }
+        }
+        
+        stage('SonarQube') {
+            steps {
+                
+                withSonarQubeEnv('sonar') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=10-Tier -Dsonar.projectName=10-Tier -Dsonar.java.binaries=. '''
+                }
+               
+            }
+        }
+        
+        stage('adservice') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                          dir('/var/lib/jenkins/workspace/CICD_PIPELINE/src/adservice/') {
+                                 sh "docker build -t agsgd/adservice:latest ."
+                                 sh "docker push agsgd/adservice:latest"
+								 sh " docker rmi agsgd/adservice:latest"
+                        }
+                    }
+                }
+            }
+        }
+		
+		stage('cartservice') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                          dir('/var/lib/jenkins/workspace/CICD_PIPELINE/src/cartservice/src/') {
+                                 sh "docker build -t agsgd/cartservice:latest ."
+                                 sh "docker push agsgd/cartservice:latest"
+								 sh " docker rmi agsgd/cartservice:latest"
+                        }
+                    }
+                }
+            }
+        }
+		
+		stage('checkoutservice') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                          dir('/var/lib/jenkins/workspace/CICD_PIPELINE/src/checkoutservice/') {
+                                 sh "docker build -t agsgd/checkoutservice:latest ."
+                                 sh "docker push agsgd/checkoutservice:latest"
+								 sh " docker rmi agsgd/checkoutservice:latest"
+                        }
+                    }
+                }
+            }
+        }
+		
+		stage('currencyservice') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                          dir('/var/lib/jenkins/workspace/CICD_PIPELINE/src/currencyservice/') {
+                                 sh "docker build -t agsgd/currencyservice:latest ."
+                                 sh "docker push agsgd/currencyservice:latest"
+								 sh " docker rmi agsgd/currencyservice:latest"
+                        }
+                    }
+                }
+            }
+        }
+        
+		stage('emailservice') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                          dir('/var/lib/jenkins/workspace/CICD_PIPELINE/src/emailservice/') {
+                                 sh "docker build -t agsgd/emailservice:latest ."
+                                 sh "docker push agsgd/emailservice:latest"
+								 sh " docker rmi agsgd/emailservice:latest"
+                        }
+                    }
+                }
+            }
+        }
+		
+		stage('frontend') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                          dir('/var/lib/jenkins/workspace/CICD_PIPELINE/src/frontend/') {
+                                 sh "docker build -t agsgd/frontend:latest ."
+                                 sh "docker push agsgd/frontend:latest"
+								 sh " docker rmi agsgd/frontend:latest"
+                        }
+                    }
+                }
+            }
+        }
+		
+		stage('loadgenerator') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                          dir('/var/lib/jenkins/workspace/CICD_PIPELINE/src/loadgenerator/') {
+                                 sh "docker build -t agsgd/loadgenerator:latest ."
+                                 sh "docker push agsgd/loadgenerator:latest"
+								 sh " docker rmi agsgd/loadgenerator:latest"
+                        }
+                    }
+                }
+            }
+        }
+		
+		stage('paymentservice') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                          dir('/var/lib/jenkins/workspace/CICD_PIPELINE/src/paymentservice/') {
+                                 sh "docker build -t agsgd/paymentservice:latest ."
+                                 sh "docker push agsgd/paymentservice:latest"
+								  sh " docker rmi agsgd/paymentservice:latest"
+                        }
+                    }
+                }
+            }
+        }
+        
+		stage('productcatalogservice') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                          dir('/var/lib/jenkins/workspace/CICD_PIPELINE/src/productcatalogservice/') {
+                                 sh "docker build -t agsgd/productcatalogservice:latest ."
+                                 sh "docker push agsgd/productcatalogservice:latest"
+								 sh " docker rmi agsgd/productcatalogservice:latest"
+                        }
+                    }
+                }
+            }
+        }
+		
+		stage('recommendationservice') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                          dir('/var/lib/jenkins/workspace/CICD_PIPELINE/src/recommendationservice/') {
+                                 sh "docker build -t agsgd/recommendationservice:latest ."
+                                 sh "docker push agsgd/recommendationservice:latest"
+								 sh " docker rmi agsgd/recommendationservice:latest"
+                        }
+                    }
+                }
+            }
+        }
+		
+		stage('shippingservice') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                          dir('/var/lib/jenkins/workspace/CICD_PIPELINE/src/shippingservice/') {
+                                 sh "docker build -t agsgd/shippingservice:latest ."
+                                 sh "docker push agsgd/shippingservice:latest"
+								 sh " docker rmi agsgd/shippingservice:latest"
+                        }
+                    }
+                }
+            }
+        }
+        
+        
+        	stage('K8-Deploy') {
+            steps {      sh 'az login --service-principal -u d2375829-b79f-4872-b9a1-703c6477707e -p GZG8Q~xKTH2UqyTE6rogDBMFeJ1CuDxMMlVYcam~ --tenant 55f5f753-3c23-4837-82b5-8a9a1fe94045'
+                        sh 'az aks get-credentials --resource-group aks-grp --name aks-2005 --overwrite-existing'
+                         sh 'kubectl apply -f deployment-service.yml'
+                         sh 'kubectl get pods '
+                         sh 'kubectl get svc'
+                
+            }
+        }
+        
+    }
+}
